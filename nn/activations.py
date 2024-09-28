@@ -6,7 +6,8 @@ class ReLU(Layer):
     
     def forward(self, inputs):
         self.inputs = inputs
-        return np.maximum(0, inputs)
+        self.outputs = np.maximum(0, inputs)
+        return self.outputs
 
     def backward(self, grad):
         return grad * (self.inputs > 0)
@@ -15,11 +16,22 @@ class ReLU(Layer):
 class Sigmoid(Layer):
     
     def forward(self, inputs):
+        self.inputs = inputs
         self.outputs = 1 / (1 + np.exp(-inputs))
         return self.outputs
 
     def backward(self, grad):
         return grad * (self.outputs * (1 - self.outputs))
+
+
+class Tanh(Layer):
+    
+    def forward(self, inputs):
+        self.output = np.tanh(inputs)
+        return self.output
+
+    def backward(self, grad):
+        return grad * (1 - self.output ** 2)
 
 
 class Softmax(Layer):
@@ -40,4 +52,3 @@ class Softmax(Layer):
             jacobian = np.diagflat(y) - np.dot(y, y.T)
             dinputs[i] = np.dot(jacobian, grad_i).flatten()
         return dinputs
-

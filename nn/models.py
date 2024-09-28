@@ -1,15 +1,18 @@
 from nn.types import Layer
-from nn.losses import CrossEntropy, MeanSquaredError
+from nn.losses import CrossEntropy, MeanSquaredError, CategoricalCrossEntropy
 from nn.optimizers import SGD, Adam
 
 
 class Sequential:
     
-    def __init__(self, layers: list[Layer] = [], loss: str = 'crossentropy', optimizer: str = 'sgd'):
+    def __init__(self, *, layers: list[Layer] = [], loss: str = 'crossentropy', optimizer: str = 'sgd', metrics: list[str] = ['loss'], callbacks: list[str] = []):
         self.layers = layers
+        self.metrics = metrics
         match loss:
             case 'crossentropy':
                 self.loss = CrossEntropy()
+            case 'categorical_crossentropy':
+                self.loss = CategoricalCrossEntropy()
             case 'mse':
                 self.loss = MeanSquaredError()
             case _:
@@ -23,7 +26,7 @@ class Sequential:
             case _:
                 raise NotImplementedError
             
-    def add(self, layer):
+    def add(self, layer: Layer):
         self.layers.append(layer)
         
     def forward(self, inputs):
@@ -40,24 +43,26 @@ class Sequential:
             for name, param in layer.params.items():
                 yield param, layer.grads[name]
     
-    def train(self, X_train, y_train, epochs, learning_rate = None):
+    def train(self, X_train, y_train, epochs: int = 1000, learning_rate: float | None = None):
         
         if not learning_rate is None:
             self.optimizer.learning_rate = learning_rate
         
         for epoch in range(epochs + 1):
-            # Forward pass
             outputs = self.forward(X_train)
             loss = self.loss.loss(outputs, y_train)
             
-            # Backward pass
             grad_loss = self.loss.grad(outputs, y_train)
             self.backward(grad_loss)
             
             self.optimizer.update(self)
         
             if epoch % 100 == 0:
-                print(f'Epoch {epoch}, Loss: {loss}')
+                match self.metrics:
+                    case ['loss']:
+                        print(f'Epoch {epoch}, Loss: {loss}')
+                    case ['accuracy']:
+                        print(f'Epoch {epoch}, Accuracy: {self.loss.accuracy(outputs, y_train)}')
                 
     def predict(self, inputs):
         return self.forward(inputs)

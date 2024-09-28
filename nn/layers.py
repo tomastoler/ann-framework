@@ -20,4 +20,10 @@ class Dense(Layer):
     
 
 class Flatten(Layer):
-    pass
+    
+    def forward(self, inputs):
+        self.input_shape = inputs.shape
+        return inputs.reshape(inputs.shape[0], -1)
+    
+    def backward(self, grad):
+        return grad.reshape(self.input_shape)

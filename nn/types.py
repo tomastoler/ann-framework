@@ -21,3 +21,6 @@ class LossFunction:
     
     def grad(self, probs, labels):
         raise NotImplementedError
+    
+    def accuracy(self, probs, labels):
+        raise NotImplementedError 
