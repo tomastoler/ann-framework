@@ -6,7 +6,9 @@ class Dense(Layer):
     
     def __init__(self, input_size, output_size):
         super().__init__()
-        self.params['W'] = np.random.randn(input_size, output_size)
+        self.input_size = input_size
+        self.output_size = output_size
+        self.params['W'] = np.random.randn(self.input_size, self.output_size)
         self.params['B'] = np.zeros((1, output_size))
         
     def forward(self, inputs):
@@ -18,12 +20,24 @@ class Dense(Layer):
         self.grads['B'] = np.sum(grad, axis=0, keepdims=True)
         return np.dot(grad, self.params['W'].T)
     
+    @classmethod
+    def from_json(cls, data):
+        layer = cls(data['input_size'], data['output_size'])
+        layer.params = data['params']
+        return layer
+    
 
 class Flatten(Layer):
     
     def forward(self, inputs):
         self.input_shape = inputs.shape
-        return inputs.reshape(inputs.shape[0], -1)
+        batch_size = self.input_shape[0]
+        return inputs.reshape(batch_size, -1)
     
     def backward(self, grad):
         return grad.reshape(self.input_shape)
+    
+    @classmethod
+    def from_json(cls, data):
+        layer = cls()
+        return layer

@@ -1,32 +1,38 @@
 from nn.models import Sequential
-from nn.layers import Dense
-from nn.activations import ReLU, Sigmoid, Softmax
+from nn.layers import Dense, Flatten
+from nn.activations import ReLU, Sigmoid, Softmax, Tanh
+from nn.callbacks import Timer
 from dataset import generate_spiral_dataset
 
+import keras
 import numpy as np
 
 X, y = generate_spiral_dataset(num_classes=3, num_points=200)
 
+(X_train, y_train), (X_test, y_test) = keras.datasets.mnist.load_data()
+
+# X_train = X_train.reshape(60000, 28*28)
+# X_test = X_test.reshape(10000, 28*28)
+# y_train = keras.utils.to_categorical(y_train, 10)
+# y_test = keras.utils.to_categorical(y_test, 10)
+
+X_train = X_train.astype(np.float32) / 255.0
+X_test = X_test.astype(np.float32) / 255.0
+
 model = Sequential(
     layers=[
-        Dense(2, 6),
+        Flatten(),
+        Dense(28*28, 128),
         ReLU(),
-        Dense(6, 12),
-        Sigmoid(),
-        Dense(12, 9),
+        Dense(128, 128),
         ReLU(),
-        Dense(9, 3),
+        Dense(128, 10),
         Softmax()
     ],
-    loss='categorical_crossentropy',
+    loss='sparse_categorical_crossentropy',
     optimizer='adam',
-    metrics=['accuracy'],
-    # callbacks=['accuracy']
+    metrics=['accuracy']
 )
 
-model.train(X, y, epochs=1000)
+model.train(X_train, y_train, epochs=100, epochs_per_log=20)
 
-n = int(input(f"Enter number of points to predict (0 - {len(X)}) -> "))
-print(f"X -> {X[n]}")
-print(f"y -> {y[n]}")
-print(f"y_hat -> {np.argmax(model.predict(X[n]))} | {model.predict(X[n])}")

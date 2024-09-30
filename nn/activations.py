@@ -11,6 +11,11 @@ class ReLU(Layer):
 
     def backward(self, grad):
         return grad * (self.inputs > 0)
+    
+    @classmethod
+    def from_json(cls, data):
+        layer = cls()
+        return layer
 
 
 class Sigmoid(Layer):
@@ -22,6 +27,11 @@ class Sigmoid(Layer):
 
     def backward(self, grad):
         return grad * (self.outputs * (1 - self.outputs))
+    
+    @classmethod
+    def from_json(cls, data):
+        layer = cls()
+        return layer
 
 
 class Tanh(Layer):
@@ -32,6 +42,11 @@ class Tanh(Layer):
 
     def backward(self, grad):
         return grad * (1 - self.output ** 2)
+
+    @classmethod
+    def from_json(cls, data):
+        layer = cls()
+        return layer
 
 
 class Softmax(Layer):
@@ -52,3 +67,8 @@ class Softmax(Layer):
             jacobian = np.diagflat(y) - np.dot(y, y.T)
             dinputs[i] = np.dot(jacobian, grad_i).flatten()
         return dinputs
+    
+    @classmethod
+    def from_json(cls, data):
+        layer = cls()
+        return layer

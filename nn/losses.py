@@ -4,6 +4,8 @@ from nn.types import LossFunction
 
 class MeanSquaredError(LossFunction):
     
+    t = 'mse'
+    
     def __init__(self):
         pass
     
@@ -19,6 +21,8 @@ class MeanSquaredError(LossFunction):
 
 class MeanAbsoluteError(LossFunction):
     
+    t = 'mae'
+    
     def __init__(self):
         pass
     
@@ -33,6 +37,8 @@ class MeanAbsoluteError(LossFunction):
 
 
 class CrossEntropy(LossFunction):
+    
+    t = 'crossentropy'
     
     def __init__(self):
         pass
@@ -53,6 +59,8 @@ class CrossEntropy(LossFunction):
 
 class CategoricalCrossEntropy(LossFunction):
     
+    t = 'categorical_crossentropy'
+    
     def __init__(self):
         self.epsilon = 1e-15 
 
@@ -72,6 +80,8 @@ class CategoricalCrossEntropy(LossFunction):
 
 class BinaryCrossEntropy(LossFunction):
     
+    t = 'binary_crossentropy'
+    
     def __init__(self):
         self.epsilon = 1e-15
         
@@ -87,3 +97,29 @@ class BinaryCrossEntropy(LossFunction):
     
     def accuracy(self, probs, labels):
         return np.mean(np.argmax(probs, axis=1) == np.argmax(labels, axis=1))
+
+
+class SparseCategoricalCrossEntropy(LossFunction):
+    
+    t = 'sparse_categorical_crossentropy'
+    
+    def __init__(self):
+        pass
+    
+    def loss(self, probs, labels):
+        batch_size = probs.shape[0]
+        correct_class_prob = probs[np.arange(batch_size), labels]
+        loss = -np.log(correct_class_prob + 1e-9)
+
+        return np.mean(loss)
+
+    def grad(self, probs, labels):
+        grad = probs.copy()
+        batch_size = probs.shape[0]
+        grad[np.arange(batch_size), labels] -= 1
+        grad /= batch_size
+        
+        return grad
+    
+    def accuracy(self, probs, labels):
+        return np.mean(np.argmax(probs, axis=1) == labels)

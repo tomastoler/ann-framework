@@ -1,7 +1,10 @@
 import numpy as np
+from nn.types import Optimizer
 
 
-class SGD:
+class SGD(Optimizer):
+    
+    t = 'sgd'
     
     def __init__(self, learning_rate: int = 0.001):
         self.learning_rate = learning_rate
@@ -11,9 +14,17 @@ class SGD:
             param -= self.learning_rate * grad
             
 
-class Adam:
+class Adam(Optimizer):
     
-    def __init__(self, learning_rate: int = 0.001, beta1: float = 0.9, beta2: float = 0.999, epsilon: float = 1e-8):
+    t = 'adam'
+    
+    def __init__(
+        self,
+        learning_rate: int = 0.001,
+        beta1: float = 0.9,
+        beta2: float = 0.999,
+        epsilon: float = 1e-8
+    ):
         self.learning_rate = learning_rate
         self.beta_1 = beta1
         self.beta_2 = beta2
