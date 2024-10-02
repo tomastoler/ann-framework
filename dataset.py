@@ -30,16 +30,3 @@ def generate_functional_dataset(num_points):
     y = np.cos(X)
     return X, y
 
-if __name__ == '__main__':
-    num_classes = 6
-    num_points = 200
-
-    X, y_one_hot = generate_spiral_dataset(num_classes, num_points)
-
-    print("X shape:", X.shape)
-    print("y_one_hot shape:", y_one_hot.shape)
-
-    plt.figure(figsize=(8, 8))
-    plt.scatter(X[:, 0], X[:, 1], c=np.argmax(y_one_hot, axis=1), cmap='jet', s=40)
-    plt.title(f'Spiral Dataset with {num_classes} Classes')
-    plt.show()

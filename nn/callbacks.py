@@ -13,4 +13,4 @@ class Timer(Callback):
     def on_epochs_end(self):
         self.end_time = time.time()
         duration = self.end_time - self.start_time
-        print(f"Time taken: {round(duration, 5)} seconds")
+        print(f"Time taken: {duration} seconds")

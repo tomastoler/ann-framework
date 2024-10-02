@@ -4,7 +4,7 @@ from nn.types import Layer
 
 class ReLU(Layer):
     
-    def forward(self, inputs):
+    def forward(self, inputs, *args, **kwargs):
         self.inputs = inputs
         self.outputs = np.maximum(0, inputs)
         return self.outputs
@@ -20,7 +20,7 @@ class ReLU(Layer):
 
 class Sigmoid(Layer):
     
-    def forward(self, inputs):
+    def forward(self, inputs, *args, **kwargs):
         self.inputs = inputs
         self.outputs = 1 / (1 + np.exp(-inputs))
         return self.outputs
@@ -36,7 +36,7 @@ class Sigmoid(Layer):
 
 class Tanh(Layer):
     
-    def forward(self, inputs):
+    def forward(self, inputs, *args, **kwargs):
         self.output = np.tanh(inputs)
         return self.output
 
@@ -51,7 +51,7 @@ class Tanh(Layer):
 
 class Softmax(Layer):
     
-    def forward(self, inputs):
+    def forward(self, inputs, *args, **kwargs):
         self.inputs = inputs
         exp_shifted = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
         self.outputs = exp_shifted / np.sum(exp_shifted, axis=1, keepdims=True)

@@ -64,9 +64,13 @@ class Sequential:
     def add(self, layer: Layer):
         self.layers.append(layer)
         
-    def forward(self, inputs):
-        for layer in self.layers:
-            inputs = layer.forward(inputs)
+    def forward(self, inputs, training=True):
+        if not training:
+            for layer in self.layers:
+                inputs = layer.forward(inputs)
+        else:
+            for layer in self.layers:
+                inputs = layer.forward(inputs, training)
         return inputs
     
     def backward(self, grad):
@@ -74,7 +78,7 @@ class Sequential:
             grad = layer.backward(grad)
     
     def predict(self, inputs):
-        return self.forward(inputs)
+        return self.forward(inputs, training=False)
     
     def get_params_and_grads(self):
         for layer in self.layers:
